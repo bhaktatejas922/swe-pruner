@@ -104,10 +104,10 @@ class SwePrunerForCodeCompression(SwePrunerPreTrainedModel):
         # Store tokenizer reference
         self.tokenizer = tokenizer
 
-        # Initialize weights (for newly added layers only, backbone is already initialized)
-        # Skip post_init if loading from pretrained - we'll load the real weights
-        if not is_loading_from_pretrained:
-            self.post_init()
+        # post_init sets tied-weight keys, fp32 module lists, and parallel plans
+        # (required by transformers >=5.x). _init_weights is a no-op so this is
+        # safe even when loading from a checkpoint.
+        self.post_init()
 
     def forward(
         self, input_ids: torch.Tensor, attention_mask: torch.Tensor
